@@ -145,7 +145,7 @@ public class TWO {
 
             //Printing BEST to file...
             printFitness(t,league.get(0).getFitness());
-            System.out.println(t+" now worst is : "+league.get(9).getFitness());
+            System.out.println(t+" now best is : "+league.get(0).getFitness());
             
             MUk = MUk - t/MAX_ITERATION;
             t++;                            // end of 1 itaration
