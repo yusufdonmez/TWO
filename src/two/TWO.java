@@ -22,7 +22,7 @@ public class TWO {
     private final double E = Math.E;            // e sayısı
     private final long SEED = 111111;           //rastgelelik için seed sayısı
     private final int MAX_ITERATION = 200;      //algoritmanın calısma sayısı
-    private final int PROBLEM = 3;              //işlem yapılacak problem no
+    private final int PROBLEM = 1;              //işlem yapılacak problem no
     private final int league_size = 10;              // parents sayısı
     private final int c_size = 30;              // childs sayısı
     private double GAMA = 1.1;                  //gama sabiti
@@ -43,6 +43,28 @@ public class TWO {
 //    System.out.println("problem: 3 "+ ga.fitnessValue(3, 0.0 ,0.0)); // (0.0, 0.0)=0.0
     }   
     
+    private void initialize(){       
+        league = new ArrayList<>();       
+        
+        for(int i=0;i<league_size;i++){
+            Team team = new Team();
+            if(PROBLEM == 1){
+                team.setX(randomInterval(-3, 3));
+                team.setY(randomInterval(-2, 2));
+                team.setFitness(calculateFitness(PROBLEM,team.getX(), team.getY()));
+            } else if(PROBLEM == 2){
+                team.setX(randomInterval(-5, 10));
+                team.setY(randomInterval(0, 15));
+                team.setFitness(calculateFitness(PROBLEM,team.getX(),team.getY()));
+            } else if(PROBLEM == 3){
+                team.setX(randomInterval(-100, 100));
+                team.setY(randomInterval(-100, 100));
+                team.setFitness(calculateFitness(PROBLEM,team.getX(),team.getY()));
+            }            
+            league.add(team);
+        }
+    }
+    
     private void run(){
         rand = new Random();
         rand.setSeed(SEED);
@@ -50,7 +72,19 @@ public class TWO {
         int t=0;
         while(t<MAX_ITERATION){
             int k=0;        //yeni kromozom indeksi
-            double SR=0.0;  //Success Rate
+            //double SR=0.0;  //Success Rate
+            
+            // Herbir aday çözüm için fitness değeri hesaplanır
+            for (int i = 0; i < league_size; i++) {
+                league.get(i).setFitness(calculateFitness(PROBLEM,league.get(i).getX(),league.get(i).getY()));                
+            }
+            // Yeni çözümleri sıralayıp listeyi güncellenir
+            TeamSorter teamSorter = new TeamSorter(league);
+            ArrayList<Team> sortedLeague = teamSorter.getSortedTeamByFitness();
+            // fit(Xi) göre yeni Weight değerleri hesaplanır
+            for (int i = 0; i < league_size; i++) {
+                league.get(i).setWeight(calculateWeight(league.get(i).getFitness(), sortedLeague.get(0).getFitness(), sortedLeague.get(league_size-1).getFitness()));                
+            }
             
             for(int i=0;i<league_size;i++){      //parent üzerinden child üretimi
                 for(int j=0; j<(c_size/league_size) ;j++){
@@ -58,7 +92,7 @@ public class TWO {
                     double moving_y = rand.nextGaussian()*GAMA;
                     c.get(k).setX(league.get(i).getX() + moving_x);
                     c.get(k).setY(league.get(i).getY() + moving_y);
-                    c.get(k).setFitness( fitnessValue(PROBLEM, c.get(k).getX(), c.get(k).getY()));
+                    c.get(k).setFitness( calculateFitness(PROBLEM, c.get(k).getX(), c.get(k).getY()));
                     if(c.get(k).getFitness() < league.get(i).getFitness()){
                         SR = SR + 1.0;
                     }
@@ -100,35 +134,13 @@ public class TWO {
         System.out.println("now best is : "+best);
     }
     
-    private void initialize(){       
-        league = new ArrayList<>();
-        league.sort((o1, o2) -> o1.getFitness().compareTo(o2.getFitness()));
-        
-        for(int i=0;i<league_size;i++){
-            Team team = new Team();
-            if(PROBLEM == 1){
-                team.setX(randomInterval(-3, 3));
-                team.setY(randomInterval(-2, 2));
-                team.setFitness(fitnessValue(PROBLEM,team.getX(), team.getY()));
-            } else if(PROBLEM == 2){
-                team.setX(randomInterval(-5, 10));
-                team.setY(randomInterval(0, 15));
-                team.setFitness(fitnessValue(PROBLEM,team.getX(),team.getY()));
-            } else if(PROBLEM == 3){
-                team.setX(randomInterval(-100, 100));
-                team.setY(randomInterval(-100, 100));
-                team.setFitness(fitnessValue(PROBLEM,team.getX(),team.getY()));
-            }            
-            league.add(team);
-        }
-    }
         
     private double randomInterval(double low, double high){
         rand = new Random();
         return (high-low)*rand.nextDouble()+low;
     }
     
-    private double fitnessValue(int _problem, double x, double y ){
+    private double calculateFitness(int _problem, double x, double y ){
         switch (_problem){
             case 1 : return (4-(2.1*x*x)+(x*x*x*x)/3)*x*x + (x*y) + (-4+4*y*y)*y*y;
             case 2 : return Math.pow((y - (5.1/(4*P*P))*x*x + (5*x)/P - 6), 2)
@@ -136,6 +148,10 @@ public class TWO {
             case 3: return 1 + (1/200)*(x*x + y*y) - Math.cos(x)*(Math.cos(y/Math.sqrt(2)));
             default: return 0.0;
         }       
+    }
+    
+    private double calculateWeight(double fitX, double fitBest, double fitWorst){
+        return (fitX-fitWorst)/(fitBest-fitWorst)+1;    
     }
 }
 
