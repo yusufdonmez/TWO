@@ -30,8 +30,8 @@ import java.util.Random;
 public class TWO {
 
     private final double P = Math.PI;           //pi sayısı
-    private final long SEED = 111111;           //rastgelelik için seed sayısı
-    private final int MAX_ITERATION = 1000;      //algoritmanın calısma sayısı
+    private final long SEED = 888888;           //rastgelelik için seed sayısı
+    private final int MAX_ITERATION = 200;      //algoritmanın calısma sayısı
     private final int PROBLEM = 1;              //işlem yapılacak problem no
     private final int league_size = 20;         //# of team(sayısı)
     private final double ALFA = 0.99;           //alfa aralık [0.9,0.99]
