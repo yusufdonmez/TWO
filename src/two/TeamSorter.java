@@ -1,8 +1,6 @@
 package two;
-
 /**
- *
- * @author yusuf
+ * @author yusuf dönmez
  */
 
 import java.util.ArrayList; 
