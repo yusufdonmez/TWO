@@ -14,6 +14,9 @@ A. Kaveh*, † and A. Zolghadr
 Centre of Excellence for Fundamental Studies in Structural Engineering, Iran University of 
 Science and Technology, Narmak, Tehran 16, Iran 
 
+https://www.sciencedirect.com/science/article/pii/S0965997817300066
+
+
 Halat Çekme Yarışı Algoritması
 java ile kodlanmıştır.
 
